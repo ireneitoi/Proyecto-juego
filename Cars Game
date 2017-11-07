@@ -1,0 +1,410 @@
+import ddf.minim.* ;
+Minim minim;
+AudioPlayer player;
+AudioInput input;
+Car[] LCars  = new Car[5];
+PImage[] ICars = new PImage[5];
+PImage[] FImage = new PImage[3];
+int IDpersonaje = 0;
+int IDpersonaje1 = -1;
+int IDpersonaje2 = -1;
+int cx = 0;
+int cy = 0;
+int PJ1x = 10;
+int PJ1y = 250;
+int PJ2x = 800;
+int PJ2y = 0;
+int xataque=0;
+int yataque = 50;
+int xvida = 590;
+int yvida = 10;
+int pantalla = 0;
+int numero = 1;
+int turno = 1;
+String Elemento[] = {"fuego","agua","aire","tierra"};
+boolean gstatus;
+
+ void setup()
+ {
+  ICars[0] = loadImage("image/1.png");
+  ICars[1] = loadImage("image/2.png");
+  ICars[2] = loadImage("image/3.png");
+  ICars[3] = loadImage("image/4.png");
+  ICars[4] = loadImage("image/5.png");
+  FImage[0] = loadImage("image/f1.jpg");
+  FImage[1] = loadImage("image/f2.jpg");
+  FImage[2] = loadImage("image/f3.jpg");
+  LCars[0] = new Car("Car1", 100, 10, 15, 3, 0);
+  LCars[1] = new Car("Car2", 100, 17, 20, 0, 1);
+  LCars[2] = new Car("Car3", 100, 12, 22, 2, 2);
+  LCars[3] = new Car("Car4", 100, 20, 15, 3, 3);
+  LCars[4] = new Car("Car5", 100, 19, 20, 1, 4); 
+  size(1100,500);
+  background(185);
+  minim = new Minim(this);
+  player = minim.loadFile("sound/inicio.mp3");
+  player.play();
+  gstatus = true;
+}
+void draw()
+{
+  if(pantalla == 0)
+    {
+     
+      image(FImage[0],0,0,1100,500);
+      if(key!=0)
+      {
+        pantalla=1;
+      }
+    }
+    if(pantalla==1)
+    {
+      image(FImage[1],0,0,1100,500);
+      fill(110,250,165);
+      rect(cx,cy,200,200);  
+      textSize(20); 
+      fill(0, 102, 153);
+      text("Seleccione Personaje Dezlizandote Con A y D \nSeleccionando con ENTER\nAtaques con letras Z,X,C", 300, 300);
+      LCars[0].Dibujar(0,0,0,0);
+      LCars[1].Dibujar(2, 200,0,0);
+      LCars[2].Dibujar(1, 0, 0,0);
+      LCars[3].Dibujar(3, 200, 0, 0);
+      LCars[4].Dibujar(4, 200,0, 0);
+      if(IDpersonaje1==-1)
+      {
+        text("Jugador 1", -300, 450);
+      }
+      if(IDpersonaje2==-2)
+      {
+        text("Jugador 2", -400, 450);
+      }
+    }
+    if(pantalla==2)
+    {
+      player.play();
+      background(#63D6F5);
+      //////image(FImage[2],0,0,1100,500); //
+      
+      LCars[IDpersonaje1].Dibujarvida(10,10);
+      LCars[IDpersonaje2].Dibujarvida(590,10);
+      LCars[IDpersonaje1].Dibujar(IDpersonaje1,PJ1x,PJ1y,1); 
+      image(ICars[IDpersonaje1],10,50,190,190);
+      image(ICars[IDpersonaje2],800,50,190,190);
+      LCars[IDpersonaje2].Dibujar(IDpersonaje2,PJ2x,PJ2y,2);
+      
+      if(LCars[IDpersonaje1].vida>0 && LCars[IDpersonaje2].vida>0)
+      {
+        if(key=='z')
+        {
+          if(turno==1) LCars[IDpersonaje1].ataque1();
+          if(turno==2) LCars[IDpersonaje2].ataque1();
+        }
+        if(key=='x')
+        {
+          if(turno==1) LCars[IDpersonaje1].ataque2();
+          if(turno==2) LCars[IDpersonaje2].ataque2();
+        }
+        if(key=='c')
+        {
+          if(turno==1) LCars[IDpersonaje1].ataque3();
+          if(turno==2) LCars[IDpersonaje2].ataque3();
+        }
+      }
+      if(LCars[IDpersonaje1].vida<=0)
+      {
+        textSize(32); 
+        fill(0, 102, 153);
+        text("Game Over \nWin Player 2 \nPara volver a jugar presione R", -250, -100);
+      }
+      if(LCars[IDpersonaje2].vida<=0)
+      {
+        textSize(32); 
+        fill(0, 102, 153);
+        text("Game Over \nWin Player 1 \nPara volver a jugar presione R", -250, -100);
+      }
+    }
+}
+
+class Car 
+{
+  String nombre;
+  int vida;
+  int ataque;
+  int defensa;
+  int elemento;
+  int dibujo;
+  int Jugador;
+  
+  Car(String nombre_, int vida_, int ataque_,int defensa_, int elemento_, int dibujo_)
+  {
+    nombre = nombre_;
+    vida = vida_;
+    ataque = ataque_;
+    defensa = defensa_;
+    elemento = elemento_;
+    dibujo = dibujo_;
+  }
+
+void Dibujar(int dibujo_,int x,int y, int jugador)
+{
+  Jugador=jugador;
+  translate(x,y);
+ switch(dibujo_)
+ {
+   case 0: 
+     //translate(x,y);
+     fill(239,169,74); 
+     image(ICars[0],x+5,y+5,190,190);
+   break;
+   
+   case 1: 
+   //translate(200,0);
+    fill(239,169,74); 
+    image(ICars[1],x+5,y+5,190,190);
+   break;
+   
+   case 2: 
+    //translate(200,-30);
+    fill(234,137,154); 
+    image(ICars[2],x+5,y+5,190,190);
+   break;
+   
+   case 3: 
+    //translate(200,20);
+    fill(0); 
+    image(ICars[3],x+5,y+5,190,190);
+   break;
+   
+   case 4:   
+    //translate(150,-30);
+    fill(36,231,17); 
+    image(ICars[4],x+5,y+5,190,190);
+   break;
+    }
+  }
+  
+  void Dibujarvida(int a, int b)
+  {
+    int ps=vida;
+    fill(0,255,0);  
+    rect(a,b,ps*5,50);
+  }
+  
+  void ataque1()
+  {
+    int y=(int)random(110);
+    int r=(int)random(100);
+    int danio=12;        
+    int critico = (int)random(100);
+    if(critico>=0 && critico<=30) danio=(int)(1.5*danio);
+    //______________________________________ataque 1 jugador 1
+    if(turno==1)
+    {
+      fill(random(255),50,100);
+      ellipse(xataque-700, 50, r, r);
+      xataque = xataque+5;
+      if(xataque==800)
+      {
+        xvida=xvida+ danio*5;
+        LCars[IDpersonaje2].vida=LCars[IDpersonaje2].vida-danio;
+        if (LCars[IDpersonaje2].vida<0)
+          LCars[IDpersonaje2].vida=0;
+        xataque = 0;
+        key=0;
+        turno=2;
+      }
+    }
+    //______________________________________ataque 1 jugador 2
+    if(turno==2)
+    {
+      fill(random(255),50,100);
+      ellipse(xataque, 50, r, r);
+      xataque = xataque-5;
+      if(xataque==-700)
+      {
+        turno=1;
+        LCars[IDpersonaje1].vida=LCars[IDpersonaje1].vida-danio;
+        if (LCars[IDpersonaje1].vida<0)
+          LCars[IDpersonaje1].vida=0;
+        xataque = 0;
+        key=0;
+      }
+    }
+  }
+  void ataque2()
+  {
+    int danio=16;        
+    int critico = (int)random(100);
+    if(critico>=0 && critico<=20) danio=(int)(1.5*danio);
+    fill(50, random(255),100);
+    int y1,y2,y3;
+    y1=(int)random(25);
+    y2=(int)random(25);
+    y3=(int)random(25);
+    //___________________________ ataque 2 jugador 1
+    if(turno==1)
+    {
+      triangle(xataque-700,50+y1,xataque -750,50+y2,xataque-600,50+y3);
+      //triangle(-700,50,-800,60,-750,70);
+      xataque = xataque + 5;
+      if(xataque==750)
+      {
+        xvida=xvida + danio*5;
+        turno=2;
+        LCars[IDpersonaje2].vida=LCars[IDpersonaje2].vida - danio;
+        if (LCars[IDpersonaje2].vida<0)
+          LCars[IDpersonaje2].vida=0;
+        xataque = 0;
+        key=0;
+      }
+    }
+    //______________ataque 2 jugador 2
+    if(turno==2)
+    {
+      triangle(xataque,50-y1,xataque-50,50-y2,xataque+30,50-y3);
+      //triangle(0,50,10,60,50,70);
+      xataque = xataque - 5;
+      if(xataque==-700)
+      {
+        turno=1;
+        LCars[IDpersonaje1].vida=LCars[IDpersonaje1].vida-danio;
+        if (LCars[IDpersonaje1].vida<0)
+          LCars[IDpersonaje1].vida=0;
+        xataque = 0;
+        key=0;
+      }
+    }
+  }
+  void ataque3()
+  {
+    int y=(int)random(30);
+    int r=(int)random(30);
+    
+    int danio=20;        
+    int critico = (int)random(100);
+    if(critico>=0 && critico<=10) danio=(int)(1.5*danio);
+    //Ataque 3 jugador 1
+    if(turno==1)
+    {
+      fill(50,100,random(255));
+      ellipse(xataque-700, 50+y, r+60, r);
+      xataque = xataque+5;
+      if(xataque==800)
+      {
+        turno=2;
+        xvida=xvida+danio*5;
+        LCars[IDpersonaje2].vida=LCars[IDpersonaje2].vida-danio;
+        if (LCars[IDpersonaje2].vida<0)
+          LCars[IDpersonaje2].vida=0;
+        xataque = 0;
+        key=0;
+      }
+    }
+    //Ataque 3 Jugador 2
+    if(turno==2)
+    {
+      fill(50,100,random(255));
+      ellipse(xataque, 50-y, r+60, r);
+      xataque = xataque-5;
+      if(xataque==-700)
+      { 
+        turno=1;
+        LCars[IDpersonaje1].vida=LCars[IDpersonaje1].vida-danio;
+        if (LCars[IDpersonaje1].vida<0)
+          LCars[IDpersonaje1].vida=0;
+        xataque = 0;
+        key=0;
+      }
+    }
+    
+  }
+}//Clase
+
+
+void inicio()
+{
+  fill(155,95,240);
+  noStroke();
+  ellipse(random(1100),random(500), random(15), random(15));
+  
+}
+
+void keyPressed()
+{
+  if(pantalla==1)
+  {
+    if(IDpersonaje >=0 && IDpersonaje<=4) 
+    {
+      if(key=='d')
+      {
+        if(IDpersonaje==4) return;
+        cx=cx+200;
+        IDpersonaje = IDpersonaje+1;     
+      }
+      if(key=='a')
+      {
+        if(IDpersonaje==0) return;
+        cx=cx-200;
+        IDpersonaje = IDpersonaje-1;
+      }
+      if(IDpersonaje1==-1)
+      {
+        if(key=='\n')
+        {
+          IDpersonaje1 = IDpersonaje;
+          IDpersonaje2 = -2;
+          IDpersonaje = 0;
+          cx = 0;
+          cy = 0;
+          return ;
+        }
+      }
+      if(IDpersonaje2==-2)
+      {       
+        if(key=='\n')
+        {
+          if(IDpersonaje==IDpersonaje1){
+            text("El Jugador 1 ya ha elegido este personaje\n", -400, 470);
+            return;
+          }
+          IDpersonaje2 = IDpersonaje;
+          IDpersonaje = 0;
+          cx = 0;
+          cy = 0;
+          pantalla = 2;
+          minim.stop();
+          player = minim.loadFile("sound/batalla.mp3");
+        }
+      }
+
+    }
+  }
+  if(pantalla==2)
+  {
+    if(LCars[IDpersonaje1].vida<=0 || LCars[IDpersonaje2].vida<=0)
+    {
+      if(gstatus){
+        minim.stop();
+        player = minim.loadFile("sound/gameover.mp3");
+        gstatus = false;
+        player.play();
+      }
+      if(key=='r')
+      {
+        gstatus = true;
+        pantalla=0;
+        LCars[IDpersonaje1].vida=100;
+        LCars[IDpersonaje2].vida=100;
+        turno=1;
+        IDpersonaje = 0;
+        IDpersonaje1 = -1;
+        IDpersonaje2 = -1;
+        minim.stop();
+        player = minim.loadFile("sound/inicio.mp3");
+        gstatus = true;
+        player.play();
+      }
+    }
+  }
+  return;
+}
